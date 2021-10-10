@@ -62,9 +62,6 @@ if (!isset($_SESSION["login"])){
 								<li><a href="logout.php"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
-						<!-- <li>
-							<a class="update-pro" href="https://www.themeineed.com/downloads/klorofil-pro-bootstrap-admin-dashboard-template/?utm_source=klorofil&utm_medium=template&utm_campaign=KlorofilPro" title="Upgrade to Pro" target="_blank"><i class="fa fa-rocket"></i> <span>UPGRADE TO PRO</span></a>
-						</li> -->
 					</ul>
 				</div>
 			</div>
@@ -93,27 +90,56 @@ if (!isset($_SESSION["login"])){
 					<!-- OVERVIEW -->
 					<div class="panel panel-headline">
 						<div class="panel-heading">
-							<h3 class="panel-title">Halaman Kelola Asisten, 
-								<?php echo $_SESSION["nama"];
-								?> !
-							</h3>
+							<h3 class="panel-title">Halaman Kelola Asisten</h3>
 						</div>
-						
 					</div>
-					<!-- END OVERVIEW -->
-					
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">Daftar Asisten</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+						<div class="panel-body no-padding">
+							<a class="btn btn-primary" href="tambah_asisten.php">Tambah Asisten</a>
+							<table class="table table-striped table-hover">
+								<thead>
+								    <tr>
+								      	<th scope="col">No</th>
+								      	<th scope="col">Nama Asisten</th>
+								      	<th scope="col">Email</th>
+								      	<th scope="col">Jabatan</th>
+								    </tr>
+								</thead>
+								<tbody>
+								    <tr>
+								    	<?php 
+								    	include 'connection.php';
+								    	$sql = "SELECT * FROM user";
+							          	$query = mysqli_query($conn, $sql);
+							          	$no = 1;
+							          	while($data = mysqli_fetch_array($query)){
+							              	echo "<tr>";
+							              	echo "<td>".$no."</td>";
+							              	echo "<td>".$data['nama']."</td>";
+							              	echo "<td>".$data['email']."</td>";
+							              	echo "<td>".$data['jabatan']."</td>";
+							              	echo "<td>";
+							              	$no++;
+							            }
+								    	?>
+								    </tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 			<!-- END MAIN CONTENT -->
 		</div>
 		<!-- END MAIN -->
 		<div class="clearfix"></div>
-		<footer>
-			<div class="container-fluid">
-				<p class="copyright">Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
-</p>
-			</div>
-		</footer>
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->

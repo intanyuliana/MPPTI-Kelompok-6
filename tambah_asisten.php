@@ -1,17 +1,36 @@
 <?php 
-require 'connection.php';
 session_start();
 if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
+
+include 'connection.php';
+if(isset($_POST['Simpan'])){
+    $nama = $_POST['nama'];
+    $jabatan = $_POST['jabatan'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $sql = "INSERT INTO user (email, password, nama, jabatan) VALUES ('$email', '$password', '$nama', '$jabatan')";
+  
+    $query = mysqli_query($conn, $sql);
+
+    if( $query ) { 
+      $message = "Data sukses disimpan!";
+      header("Location: asisten_admin.php");
+    } else {
+      $message = "Data gagal disimpan!";
+    }
+  }
+
 ?>
 
 <!doctype html>
 <html lang="en">
 
 <head>
-	<title>Dashboard</title>
+	<title>Tambah Asisten</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -29,12 +48,6 @@ if (!isset($_SESSION["login"])){
 	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
 	<!-- ICONS -->
 	<link rel="icon" type="image/png" sizes="96x96" href="assets/img/LDKOM_mini1.png">
-
-	<style>
-		hr.garis{
-			border-top: 3px solid;
-		}
-	</style>
 </head>
 
 <body>
@@ -57,7 +70,7 @@ if (!isset($_SESSION["login"])){
 					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
 				</div>
 				<div class="navbar-form navbar-left">
-					 <p style="font-size: 32px; margin-top: 7px;">Dashboard</p>
+					 <p style="font-size: 32px; margin-top: 7px;">Tambah Asisten</p>
 				</div>
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
@@ -69,9 +82,6 @@ if (!isset($_SESSION["login"])){
 								<li><a href="logout.php"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
-						<!-- <li>
-							<a class="update-pro" href="https://www.themeineed.com/downloads/klorofil-pro-bootstrap-admin-dashboard-template/?utm_source=klorofil&utm_medium=template&utm_campaign=KlorofilPro" title="Upgrade to Pro" target="_blank"><i class="fa fa-rocket"></i> <span>UPGRADE TO PRO</span></a>
-						</li> -->
 					</ul>
 				</div>
 			</div>
@@ -82,8 +92,8 @@ if (!isset($_SESSION["login"])){
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="admin_dashboard.php" class="active"><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
-						<li><a href="asisten_admin.php" class=""><i class="lnr lnr-file-empty"></i> <span>Asisten</span></a></li>		
+						<li><a href="admin_dashboard.php" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
+						<li><a href="asisten_admin.php" class="active"><i class="lnr lnr-file-empty"></i> <span>Asisten</span></a></li>		
 						<li><a href="presensi_admin.php" class=""><i class="lnr lnr-chart-bars"></i> <span>Presensi</span></a></li>
 						<li><a href="denda_admin.php" class=""><i class="lnr lnr-code"></i> <span>Denda</span></a></li>
 						<li><a href="logout.php" class=""><i class="lnr lnr-cog"></i> <span>Log Out</span></a></li>
@@ -98,77 +108,39 @@ if (!isset($_SESSION["login"])){
 			<div class="main-content">
 				<div class="container-fluid">
 					<!-- OVERVIEW -->
-					<div class="panel panel-headline">
+					<div class="panel">
 						<div class="panel-heading">
-							<h3 class="panel-title">Selamat Datang, 
-								<?php echo $_SESSION["nama"];
-								?> !
-							</h3>
-						</div>	
-					</div>
-					<!-- END OVERVIEW -->
-					<div class="row">
-						<div class="col-md-8">
-							<!-- Data User -->
-							<div class="panel">
-								<div class="panel-heading">
-									<h3 class="panel-title">User Profil</h3>
-									<div class="right">
-										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
-										<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
-									</div>
-								</div>
-								<div class="panel-body no-padding">
-									<div class="row">
-										<div class="col-md-5">
-											<img src="assets/img/profilepic.svg" style="width: 150px; margin-left: 25px; margin-bottom: 25px">
-										</div>
-										<div class="col-md-5">
-											<h2 style="text-align: center;"><?php echo $_SESSION["nama"] ?></h2>
-											<hr class="garis">
-											<h3 style="text-align: center; color: #00aaff"><?php $id = $_SESSION["id_user"];
-											$sql = "SELECT jabatan FROM user WHERE id_user = '$id'";
-											$query = mysqli_query($conn, $sql);
-											while($row = mysqli_fetch_array($query)){
-												echo $row["jabatan"];
-											}
-											?></h3>	
-										</div>
-									</div>
-								</div>
+							<h3 class="panel-title">Form Tambah Asisten</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
-							<!-- END RECENT PURCHASES -->
 						</div>
-						<div class="col-md-4">
-							<!-- Date & Time -->
-							<div class="panel">
-								<div class="panel-heading">
-									<h3 class="panel-title">Date & Time</h3>
-									<div class="right">
-										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
-										<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
-									</div>
-								</div>
-								<div class="panel-body">
-									<div class="calendar">
-										<div class="header">
-											<a data-action="prev-month" href="javascript:void(0)" title="Previous Month"><i></i></a>
-											<div class="text" data-render="month-year"></div>
-											<a data-action="next-month" href="javascript:void(0)" title="Next Month"><i></i></a>
-										</div>
-										<div class="months" data-flow="left">
-											<div class="month month-a">
-												<div class="render render-a"></div>
-											</div>
-											<div class="month month-b">
-												<div class="render render-b"></div>
-											</div>
-										</div>
-									</div>
-
-								</div>
-							</div>
-							<!-- End Date & Time -->
+						<div class="panel-body no-padding">
+							<form action="tambah_asisten.php" method="POST">
+						      	<div class="form-group">
+						        	<label>Nama Asisten</label>
+						        	<input type="text" name="nama" class="form-control" placeholder="Masukkan Nama Asisten" required="">
+						      	</div><br>
+						      	<div class="form-group">
+						        	<label>Jabatan</label>
+						        	<select class="form-control" name="jabatan">
+						          		<option value="Kordas">1. Koor Labor</option>
+						          		<option value="Asisten">2. Asisten</option>
+						        	</select>
+						      	</div><br>
+						      	<div class="form-group">
+						            <label>Email</label>
+						            <input type="text" name="email" class="form-control" placeholder="Masukkan Email" required="">
+						        </div>
+						        <div class="form-group">
+						            <label>Password</label>
+						            <input type="text" name="password" class="form-control" placeholder="Masukkan Password" required="">
+						        </div>
+						      	<button onclick="return confirm('Apakah anda ingin menginput data?');" type="submit" class="btn btn-primary" name="Simpan">Simpan</button>
+						      	<button type="reset" class="btn btn-danger">Hapus</button>
+						      	<a class="btn btn-outline-warning" href="asisten_admin.php">Kembali</a>
+						    </form>
 						</div>
 					</div>
 				</div>
