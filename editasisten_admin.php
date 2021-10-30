@@ -1,28 +1,45 @@
 <?php 
 session_start();
+require 'connection.php';
 if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
-require 'connection.php';
 
-if(isset($_POST['Hapus'])){
-  $id_piket = $_POST['id_piket'];
-  $sql = "DELETE FROM jadwal_piket WHERE id_piket='$id_piket'";
-    $query = mysqli_query($conn, $sql);
-      if( $query ){
-          $message = "Data Sukses Dihapus";
-      } else {
-          $message = "Data Gagal Dihapus";
-      }
+$id_user = $_REQUEST['id_user'];
+$sql = 'SELECT * FROM user WHERE id_user='.$id_user;
+
+if(!$result = $conn->query($sql)){
+  die("Gagal Query");
 }
+
+$data = $result->fetch_assoc();
+
+if(isset($_POST['Edit'])){
+    $id_user = $_POST['id_user'];
+    $nama = $_POST['nama'];
+    $jabatan = $_POST['jabatan'];
+    $email = $_POST['email'];
+
+    $statement = $conn->prepare('UPDATE user SET email = ?, nama = ?, jabatan = ? WHERE id_user=?');
+    $statement->bind_param('sssi', $email, $nama, $jabatan, $id_user);
+    $statement->execute();
+
+    if( $conn->affected_rows > 0 ) { 
+      $message = "Data sukses disimpan!";
+      header('Location:asisten_admin.php');
+    } else {
+      $message = "Data gagal disimpan!";
+    }
+  }
+
 ?>
 
 <!doctype html>
 <html lang="en">
 
 <head>
-	<title>Kelola Presensi</title>
+	<title>Kelola Asisten</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -62,7 +79,7 @@ if(isset($_POST['Hapus'])){
 					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
 				</div>
 				<div class="navbar-form navbar-left">
-					 <p style="font-size: 32px; margin-top: 7px;">Kelola Presensi</p>
+					 <p style="font-size: 32px; margin-top: 7px;">Kelola Asisten</p>
 				</div>
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
@@ -74,9 +91,6 @@ if(isset($_POST['Hapus'])){
 								<li><a href="logout.php"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
-						<!-- <li>
-							<a class="update-pro" href="https://www.themeineed.com/downloads/klorofil-pro-bootstrap-admin-dashboard-template/?utm_source=klorofil&utm_medium=template&utm_campaign=KlorofilPro" title="Upgrade to Pro" target="_blank"><i class="fa fa-rocket"></i> <span>UPGRADE TO PRO</span></a>
-						</li> -->
 					</ul>
 				</div>
 			</div>
@@ -88,8 +102,8 @@ if(isset($_POST['Hapus'])){
 				<nav>
 					<ul class="nav">
 						<li><a href="admin_dashboard.php" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
-						<li><a href="asisten_admin.php" class=""><i class="lnr lnr-file-empty"></i> <span>Asisten</span></a></li>		
-						<li><a href="presensi_admin.php" class="active"><i class="lnr lnr-chart-bars"></i> <span>Presensi</span></a></li>
+						<li><a href="asisten_admin.php" class="active"><i class="lnr lnr-file-empty"></i> <span>Asisten</span></a></li>		
+						<li><a href="presensi_admin.php" class=""><i class="lnr lnr-chart-bars"></i> <span>Presensi</span></a></li>
 						<li><a href="denda_admin.php" class=""><i class="lnr lnr-code"></i> <span>Denda</span></a></li>
 						<li><a href="logout.php" class=""><i class="lnr lnr-cog"></i> <span>Log Out</span></a></li>
 					</ul>
@@ -105,60 +119,39 @@ if(isset($_POST['Hapus'])){
 					<!-- OVERVIEW -->
 					<div class="panel panel-headline">
 						<div class="panel-heading">
-							<h3 class="panel-title">Halaman Kelola Presensi, 
-								<?php echo $_SESSION["nama"];
-								?> !
-							</h3>
+							<h3 class="panel-title">Halaman Edit Data Asisten</h3>
 						</div>
 					</div>
-					<!-- END OVERVIEW -->
 					<div class="panel">
 						<div class="panel-heading">
-							<h3 class="panel-title">Jadwal Presensi Asisten</h3>
+							<h3 class="panel-title">Ubah Data Asisten</h3>
 							<div class="right">
 								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
 						</div>
 						<div class="panel-body no-padding">
-							<a class="btn btn-primary" href="tambah_presensi.php">Tambah Jadwal</a>
-							<table class="table table-striped table-hover">
-								<thead>
-								    <tr>
-								      	<th scope="col">No</th>
-								      	<th scope="col">Nama Asisten</th>
-								      	<th scope="col">Jadwal 1</th>
-								      	<th scope="col">Jadwal 2</th>
-								      	<th scope="col">Aksi</th>
-								    </tr>
-								</thead>
-								<tbody>
-								    <tr>
-								    	<?php 
-								    	include 'connection.php';
-								    	$sql = "SELECT * FROM jadwal_piket JOIN user ON jadwal_piket.id_user = user.id_user";
-							          	$query = mysqli_query($conn, $sql);
-							          	$no = 1;
-							          	while($data = mysqli_fetch_array($query)){
-							              	echo "<tr>";
-							              	echo "<td>".$no."</td>";
-							              	echo "<td>".$data['nama']."</td>";
-							              	echo "<td>".$data['hari1']."</td>";
-							              	echo "<td>".$data['hari2']."</td>";
-							              	echo "<td>";
-							              	$no++;
-							              	?>
-							              	<form action="presensi_admin.php" method="POST">
-								                <input type="hidden" name="id_piket" value="<?php echo $data['id_piket']?>">
-								                <a class="btn btn-primary" href="editjadwal_admin.php?id_user=<?php echo $data['id_piket']?>">Edit</a>
-								                <button onclick="return confirm('Apakah anda ingin menghapus data?');" type="submit" class="btn btn-danger" name="Hapus">Hapus</button>
-								             </form>
-							              	<?php
-							            }
-								    	?>
-								    </tr>
-								</tbody>
-							</table>
+							<form action="editasisten_admin.php" method="POST">
+								<input type="hidden" name="id_user" value="<?php echo $data['id_user']; ?>">
+						      	<div class="form-group">
+						        	<label>Nama Asisten</label>
+						        	<input type="text" name="nama" class="form-control" placeholder="Masukkan Nama Asisten" value="<?php echo $data['nama']; ?>" required="">
+						      	</div><br>
+						      	<div class="form-group">
+						        	<label>Jabatan</label>
+						        	<select class="form-control" name="jabatan">
+						          		<option value="Kordas">1. Koor Labor</option>
+						          		<option value="Asisten">2. Asisten</option>
+						        	</select>
+						      	</div><br>
+						      	<div class="form-group">
+						            <label>Email</label>
+						            <input type="text" name="email" class="form-control" placeholder="Masukkan Email" value="<?php echo $data['email']; ?>" required="">
+						        </div>
+						      	<button onclick="return confirm('Apakah anda ingin menginput data?');" type="submit" class="btn btn-primary" name="Edit">Simpan</button>
+						      	<button type="reset" class="btn btn-danger">Hapus</button>
+						      	<a class="btn btn-outline-warning" href="asisten_admin.php">Kembali</a>
+						    </form>
 						</div>
 					</div>
 				</div>
@@ -167,12 +160,6 @@ if(isset($_POST['Hapus'])){
 		</div>
 		<!-- END MAIN -->
 		<div class="clearfix"></div>
-		<footer>
-			<div class="container-fluid">
-				<p class="copyright">Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
-</p>
-			</div>
-		</footer>
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->

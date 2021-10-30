@@ -12,7 +12,9 @@ if(isset($_POST['Simpan'])){
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $sql = "INSERT INTO user (email, password, nama, jabatan) VALUES ('$email', '$password', '$nama', '$jabatan')";
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    $sql = "INSERT INTO user (email, password, nama, jabatan) VALUES ('$email', '$hashed_password', '$nama', '$jabatan')";
   
     $query = mysqli_query($conn, $sql);
 

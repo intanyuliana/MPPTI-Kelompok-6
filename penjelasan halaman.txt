@@ -1,0 +1,14 @@
+admin_dashboard -> dashboard untuk admin
+asisten_admin -> tampil asisten untuk admin
+connection -> koneksi db
+denda_admin -> tampil denda asisten untuk admin
+denda_user -> tampil denda user untuk user
+editasisten_admin -> fitur edit data asisten untuk admin
+login_page -> halaman login
+logout -> fitur logout
+presensi_admin -> tampil presensi asisten untuk admin
+presensi_user -> halaman presensi untuk user
+profile_admin -> halaman profile untuk admin
+profile_user -> halaman profile untuk user
+tambah_asisten -> fitur tambah asisten untuk admin
+user_dashboard -> halaman dashboard untuk user

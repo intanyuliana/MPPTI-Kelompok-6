@@ -1,8 +1,20 @@
 <?php 
 session_start();
+require 'connection.php';
 if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
+}
+
+if(isset($_POST['Hapus'])){
+  $id_user = $_POST['id_user'];
+  $sql = "DELETE FROM user WHERE id_user='$id_user'";
+   $query = mysqli_query($conn, $sql);
+    if( $query ){
+         $message = "Data Sukses Dihapus";
+    } else {
+         $message = "Data Gagal Dihapus";
+    }
 }
 ?>
 
@@ -110,6 +122,7 @@ if (!isset($_SESSION["login"])){
 								      	<th scope="col">Nama Asisten</th>
 								      	<th scope="col">Email</th>
 								      	<th scope="col">Jabatan</th>
+								      	<th scope="col">Aksi</th>
 								    </tr>
 								</thead>
 								<tbody>
@@ -127,6 +140,13 @@ if (!isset($_SESSION["login"])){
 							              	echo "<td>".$data['jabatan']."</td>";
 							              	echo "<td>";
 							              	$no++;
+							              	?>
+							              	<form action="asisten_admin.php" method="POST">
+								                <input type="hidden" name="id_user" value="<?php echo $data['id_user']?>">
+								                <a class="btn btn-primary" href="editasisten_admin.php?id_user=<?php echo $data['id_user']?>">Edit</a>
+								                <button onclick="return confirm('Apakah anda ingin menghapus data?');" type="submit" class="btn btn-danger" name="Hapus">Hapus</button>
+								             </form>
+							              	<?php
 							            }
 								    	?>
 								    </tr>

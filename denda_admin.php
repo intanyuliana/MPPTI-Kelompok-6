@@ -1,8 +1,34 @@
 <?php 
 session_start();
+require 'connection.php';
 if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
+}
+
+if(isset($_POST['Bayar'])){
+    $id_denda = $_POST['id_denda'];
+    $nominal = $_POST['nominal'];
+    $denda = $_POST['denda'];
+
+    if($nominal > $denda){
+   		echo '<script type ="text/JavaScript">';  
+       	echo 'alert("Nominal Lebih Besar Dari Denda")';  
+       	echo '</script>';
+    }
+    else{
+    	$sisa = $denda-$nominal;
+    	$sql = "UPDATE denda SET denda = '$sisa' WHERE id_denda = '$id_denda'";
+  
+	    $query = mysqli_query($conn, $sql);
+
+	    if( $query ) { 
+	      $message = "Data sukses disimpan!";
+	      header("Location: denda_admin.php");
+	    } else {
+	      $message = "Data gagal disimpan!";
+	     }
+    } 
 }
 ?>
 
@@ -101,7 +127,108 @@ if (!isset($_SESSION["login"])){
 						
 					</div>
 					<!-- END OVERVIEW -->
-					
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">Detail Denda Asisten</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+						<div class="panel-body no-padding">
+							<table class="table table-striped table-hover">
+								<thead>
+								    <tr>
+								      	<th scope="col">No</th>
+								      	<th scope="col">Nama Asisten</th>
+								      	<th scope="col">Total Denda</th>
+								      	<th scope="col">Aksi</th>
+								    </tr>
+								</thead>
+								<tbody>
+								    <tr>
+								    	<form action="denda_admin.php" method="POST">
+								    	<?php 
+								    	include 'connection.php';
+								    	$sql = "SELECT * FROM user JOIN denda ON user.id_user = denda.id_user";
+							          	$query = mysqli_query($conn, $sql);
+							          	$no = 1;
+							          	
+							          	while($data = mysqli_fetch_array($query)){
+							              	echo "<tr>";
+							              	echo "<td>".$no."</td>";
+							              	echo "<td>".$data['nama']."</td>";
+							              	echo "<td>".$data['denda']."</td>";
+							              	echo "<td><input type='text' name='nominal' class='form-control' placeholder='Masukkan Nominal'></td>";
+							              	echo "<td><input type='hidden' name='denda' value='".$data['denda']."'></td>";
+							              	echo "<td>";
+							              	$no++;
+							              	?>
+							              	
+								                <input type="hidden" name="id_denda" value="<?php echo $data['id_denda']?>">
+								                <button onclick="return confirm('Apakah anda ingin membayar denda?');" type="submit" class="btn btn-danger" name="Bayar">Bayar</button>
+								             
+							              	<?php
+							            }
+
+								    	?>
+								    	</form>
+								    </tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">History Pembayaran Denda</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+						<div class="panel-body no-padding">
+							<table class="table table-striped table-hover">
+								<thead>
+								    <tr>
+								      	<th scope="col">No</th>
+								      	<th scope="col">Nama Asisten</th>
+								      	<th scope="col">Total Denda</th>
+								      	<th scope="col">Aksi</th>
+								    </tr>
+								</thead>
+								<tbody>
+								    <tr>
+								    	<form action="denda_admin.php" method="POST">
+								    	<?php 
+								    	include 'connection.php';
+								    	$sql = "SELECT * FROM user JOIN denda ON user.id_user = denda.id_user";
+							          	$query = mysqli_query($conn, $sql);
+							          	$no = 1;
+							          	
+							          	while($data = mysqli_fetch_array($query)){
+							              	echo "<tr>";
+							              	echo "<td>".$no."</td>";
+							              	echo "<td>".$data['nama']."</td>";
+							              	echo "<td>".$data['denda']."</td>";
+							              	echo "<td><input type='text' name='nominal' class='form-control' placeholder='Masukkan Nominal'></td>";
+							              	echo "<td><input type='hidden' name='denda' value='".$data['denda']."'></td>";
+							              	echo "<td>";
+							              	$no++;
+							              	?>
+							              	
+								                <input type="hidden" name="id_denda" value="<?php echo $data['id_denda']?>">
+								                <button onclick="return confirm('Apakah anda ingin membayar denda?');" type="submit" class="btn btn-danger" name="Bayar">Bayar</button>
+								             
+							              	<?php
+							            }
+
+								    	?>
+								    	</form>
+								    </tr>
+								</tbody>
+							</table>
+						</div>
+					</div>	
 				</div>
 			</div>
 			<!-- END MAIN CONTENT -->
