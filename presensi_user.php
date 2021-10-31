@@ -5,6 +5,8 @@ if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
+
+$cekhadirsql = "SELECT * FROM presensi WHERE "
 ?>
 
 <!doctype html>
@@ -29,6 +31,14 @@ if (!isset($_SESSION["login"])){
 	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
 	<!-- ICONS -->
 	<link rel="icon" type="image/png" sizes="96x96" href="assets/img/LDKOM_mini1.png">
+	<link rel="stylesheet" href=https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js> ></link>
+	<script type="text/javascript" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function() {
+			$("#tab_presen").DataTable();
+		} );
+	</script>
 </head>
 
 <body>
@@ -75,7 +85,6 @@ if (!isset($_SESSION["login"])){
 					<ul class="nav">
 						<li><a href="user_dashboard.php" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>		
 						<li><a href="presensi_user.php" class="active"><i class="lnr lnr-chart-bars"></i> <span>Presensi</span></a></li>
-						<li><a href="denda_user.php" class=""><i class="lnr lnr-code"></i> <span>Denda</span></a></li>
 						<li><a href="logout.php" class=""><i class="lnr lnr-cog"></i> <span>Log Out</span></a></li>
 					</ul>
 				</nav>
@@ -97,7 +106,184 @@ if (!isset($_SESSION["login"])){
 						</div>
 					</div>
 					<!-- END OVERVIEW -->
-					
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">Isi Presensi Asisten</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+						<div class="panel-body">
+							<?php
+							$today = date('l');
+							if ($today == "Monday") {
+							 	$day = "Senin";
+							 } 
+							 elseif ($today == "Tuesday") {
+							 	$day = "Selasa";
+							 }
+							 elseif ($today == "Wednesday") {
+							 	$day = "Rabu";
+							 }
+							elseif ($today == "Thursday") {
+							 	$day = "Kamis";
+							 }
+							elseif ($today == "Friday") {
+							 	$day = "Jumat";
+							 }
+							elseif ($today == "Saturday") {
+							 	$day = "Sabtu";
+							 }
+							elseif ($today == "Sunday") {
+							 	$day = "Minggu";
+							 }
+							$id = $_SESSION['id_user'];
+							$konfir = "SELECT * FROM jadwal_piket JOIN user ON jadwal_piket.id_user = user.id_user WHERE jadwal_piket.id_user = '$id'";
+							$kueri = mysqli_query($conn, $konfir);
+							while($row = mysqli_fetch_array($kueri)){
+								if(($row['hari1']==$day)||($row['hari2']==$day)){
+									?>
+									<table class="table table-striped table-hover">
+										<thead>
+										    <tr>
+										      	<th scope="col">Nama</th>
+										      	<th scope="col">Tanggal</th>
+										      	<th scope="col">Hari</th>
+										      	<th scope="col">Presensi Pagi</th>
+										      	<th scope="col">Presensi Sore</th>
+										    </tr>
+										</thead>
+										<tbody>
+										    <tr>
+										    	<form action="presensi_user.php" method="POST">
+										    	<?php 
+									          	$no = 1;
+									          	date_default_timezone_set('Asia/Jakarta');
+									          	$tanggal = date("Y-m-d");
+									          	$waktu = date("H:i:s");
+
+									          	$absen_pagi_awal = strtotime("07:00:00");
+												$absen_pagi_awal = date("H:i:s", $absen_pagi_awal);
+
+									          	$absen_pagi_akhir = strtotime("09:00:00");
+									          	$absen_pagi_akhir = date("H:i:s", $absen_pagi_akhir);
+
+									          	$absen_sore_awal = strtotime("16:00:00");
+									          	$absen_sore_awal = date("H:i:s", $absen_sore_awal);
+
+									          	$absen_sore_akhir = strtotime("17:00:00");
+									          	$absen_sore_akhir = date("H:i:s", $absen_sore_akhir);
+
+									          	$limit_absen = strtotime("23:59:59");
+									          	$limit_absen = date("H:i:s", $limit_absen);
+									          	$tutup = "Belum bisa mengisi presensi";
+									            echo "<tr>";
+									            echo "<td>".$row['nama']."</td>";
+									            echo "<td>".$tanggal."</td>";
+									            echo "<td>".$day."</td>";
+									            if ($waktu>=$absen_pagi_awal && $waktu<$absen_sore_awal) {
+									            	echo "<td>"
+													?>
+									            	<a class="btn btn-primary" href="hadir_asisten.php" role="button">Hadir</a>
+									            	<a class="btn btn-warning" href="izin_asisten.php" role="button">Izin</a>
+									        		<?php
+									        		"</td>";
+									        		echo "<td>".$tutup."</td>";
+									       		}
+									       		elseif ($waktu>=($absen_sore_awal) && $waktu<=($limit_absen)) {
+									       			echo "<td>".$tutup."</td>";
+									            	echo "<td>"
+									             	?>
+									            	<a class="btn btn-primary" href="hadir_asisten.php" role="button">Hadir</a>
+									            	<a class="btn btn-warning" href="izin_asisten.php" role="button">Izin</a>
+									        		<?php
+									        		"</td>";	
+									       		}
+									       		else{
+									       			echo "<td>".$tutup."</td>";
+									       			echo "<td>".$tutup."</td>";
+									       		}
+									            $no++;
+									            ?>
+										        <input type="hidden" name="id_denda" value="<?php echo $data['id_denda']?>">
+										    	</form>
+										    </tr>
+										</tbody>
+									</table>
+								<?php
+								}
+								else if(($row['hari1']!=$day)||($row['hari2']!=$day)){
+									?>
+								<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+								  <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+								    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+								  </symbol>
+								</svg>
+								<div class="alert alert-warning d-flex align-items-center" role="alert">
+								  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+								  <div>
+								    Sekarang bukan jadwal piket Anda
+								  </div>
+								</div> <?php
+								}
+								else{
+									?>
+									<div class="alert alert-danger d-flex align-items-center" role="alert">
+									  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+									  <div>
+									    Pilihan hari salah !!!
+									  </div>
+									</div> <?php
+								}
+							}
+							?>
+						</div>
+					</div>
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">Detail Presensi Asisten</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+						<div class="panel-body">
+							<table id="tab_presen" class="table table-striped table-bordered table-sm" cellspacing="0" width="100%">
+							  <thead>
+							    <tr>
+							      <th class="th-sm">No</th>
+							      <th class="th-sm">Nama</th>
+							      <th class="th-sm">Jenis Presensi</th>
+							      <th class="th-sm">Kehadiran</th>
+							      <th class="th-sm">Waktu Presensi</th>
+							      <th class="th-sm">Kegiatan</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							    <tr>
+							      	<?php 
+								   	require 'connection.php';
+								   	$id2 = $_SESSION['id_user'];
+								    $kueri2 = "SELECT * FROM presensi JOIN jadwal_piket ON presensi.id_piket = jadwal_piket.id_piket JOIN user ON jadwal_piket.id_user = user.id_user WHERE jadwal_piket.id_user = $id2";
+							        $query = mysqli_query($conn, $kueri2);
+							        $no = 1;  	
+							        while($data = mysqli_fetch_array($query)){
+							            echo "<tr>";
+							            echo "<td>".$no."</td>";
+							            echo "<td>".$data['nama']."</td>";
+							            echo "<td>".$data['jenis_presensi']."</td>";
+							            echo "<td>".$data['kehadiran']."</td>";
+							            echo "<td>".$data['waktu']."</td>";
+							            echo "<td>".$data['kegiatan']."</td>";
+							            $no++;
+							        }
+								    ?>
+							    </tr>
+							  </tbody>
+							</table>
+						</div>
+					</div>	
 				</div>
 			</div>
 			<!-- END MAIN CONTENT -->

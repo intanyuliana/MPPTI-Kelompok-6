@@ -130,7 +130,7 @@ if(isset($_POST['Edit'])){
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
 						</div>
-						<div class="panel-body no-padding">
+						<div class="panel-body">
 							<form action="editasisten_admin.php" method="POST">
 								<input type="hidden" name="id_user" value="<?php echo $data['id_user']; ?>">
 						      	<div class="form-group">

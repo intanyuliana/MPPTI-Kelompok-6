@@ -120,8 +120,8 @@ if(isset($_POST['Hapus'])){
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
 						</div>
-						<div class="panel-body no-padding">
-							<a class="btn btn-primary" href="tambah_presensi.php">Tambah Jadwal</a>
+						<div class="panel-body">
+							<a class="btn btn-primary" href="tambah_presensi.php">Tambah Jadwal</a></br></br>
 							<table class="table table-striped table-hover">
 								<thead>
 								    <tr>
@@ -150,7 +150,7 @@ if(isset($_POST['Hapus'])){
 							              	?>
 							              	<form action="presensi_admin.php" method="POST">
 								                <input type="hidden" name="id_piket" value="<?php echo $data['id_piket']?>">
-								                <a class="btn btn-primary" href="editjadwal_admin.php?id_user=<?php echo $data['id_piket']?>">Edit</a>
+								                <a class="btn btn-primary" href="editjadwal_admin.php?id_piket=<?php echo $data['id_piket']?>">Edit</a>
 								                <button onclick="return confirm('Apakah anda ingin menghapus data?');" type="submit" class="btn btn-danger" name="Hapus">Hapus</button>
 								             </form>
 							              	<?php

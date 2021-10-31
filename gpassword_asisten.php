@@ -5,14 +5,29 @@ if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
-$id_user = $_SESSION['id_user'];
-$sql = 'SELECT * FROM user WHERE id_user='.$id_user;
+if(isset($_POST['Simpan'])){
+  $pass = $_POST['pass'];
+  $konpass = $_POST['konpass'];
+  $id = $_SESSION['id_user'];
+  if($pass == $konpass){
+  	$pass = password_hash($pass, PASSWORD_DEFAULT);
+  	$statement = $conn->prepare('UPDATE user SET password = ? WHERE id_user=?');
+    $statement->bind_param('si', $pass, $id);
+    $statement->execute();
 
-if(!$result = $conn->query($sql)){
-  die("Gagal Query");
+    if( $conn->affected_rows > 0 ) { 
+      $message = "Data sukses disimpan!";
+      header('Location:profile_user.php');
+    } else {
+      $message = "Data gagal disimpan!";
+    }
+  }
+  else{
+  	echo '<script type ="text/JavaScript">';  
+    echo 'alert("Password tidak sama")';  
+    echo '</script>';
+  }    
 }
-
-$data = $result->fetch_assoc();
 ?>
 
 <!doctype html>
@@ -106,52 +121,26 @@ $data = $result->fetch_assoc();
 					<!-- END OVERVIEW -->
 					<div class="panel">
 						<div class="panel-heading">
-							<h3 class="panel-title">User Profile</h3>
+							<h3 class="panel-title">Ganti Password</h3>
 							<div class="right">
 								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
 						</div>
 						<div class="panel-body">
-							<div class="row">
-								<div class="col-md-3">
-									<img src="assets/img/profilepic.svg" style="width: 150px; margin-left: 25px; margin-bottom: 25px">
-								</div>
-								<div class="col-md-5" align="left">
-									<table class="table table-borderless">
-										<tr>
-											<th><h3>Nama</h3></th>
-											<th><h3>:</h3></th>
-											<th><h3 style="text-align: left;"><?php echo $data['nama'] ?></h3></th>
-										</tr>
-										<tr>
-											<th><h3>Email</h3></th>
-											<th><h3>:</h3></th>
-											<th><h3 style="text-align: left;"><?php echo $data['email'] ?></h3></th>
-										</tr>
-										<tr>
-											<th><h3>Jabatan</h3></th>
-											<th><h3>:</h3></th>
-											<th><h3 style="text-align: left;"><?php $id = $data['id_user'];
-												$sql = "SELECT jabatan FROM user WHERE id_user = '$id'";
-												$query = mysqli_query($conn, $sql);
-												while($row = mysqli_fetch_array($query)){
-													echo $row["jabatan"];
-												}
-											?></h3>	</th>
-										</tr>
-										<tr>
-											<th></th>
-											<th></th>
-											<th>
-												<a class="btn btn-warning" href="gpassword_asisten.php" role="button">Ganti Password</a>
-												<a class="btn btn-success" href="eprof_asisten.php" role="button">Edit Profile</a>
-											</th>
-										</tr>
-									</table>
-
-								</div>
-							</div>
+							<form action="gpassword_asisten.php" method="POST">
+								<input type="hidden" name="id_user" value="<?php echo $data['id_user']; ?>">
+						      	<div class="form-group">
+						            <label>Masukkan Password Baru</label>
+						            <input type="text" name="pass" class="form-control" placeholder="Masukkan Password Baru" required="">
+						        </div></br>
+						        <div class="form-group">
+						            <label>Konfirmasi Password Baru</label>
+						            <input type="text" name="konpass" class="form-control" placeholder="Masukkan Password Baru" required="">
+						        </div>
+						      	<button onclick="return confirm('Apakah anda ingin menginput data?');" type="submit" class="btn btn-primary" name="Simpan">Simpan</button>
+						      	<a class="btn btn-outline-warning" href="profile_user.php">Kembali</a>
+						    </form>
 						</div>
 					</div>
 				</div>

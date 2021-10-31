@@ -113,8 +113,8 @@ if(isset($_POST['Hapus'])){
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
 						</div>
-						<div class="panel-body no-padding">
-							<a class="btn btn-primary" href="tambah_asisten.php">Tambah Asisten</a>
+						<div class="panel-body">
+							<a class="btn btn-primary" href="tambah_asisten.php">Tambah Asisten</a></br></br>
 							<table class="table table-striped table-hover">
 								<thead>
 								    <tr>

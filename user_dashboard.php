@@ -81,7 +81,6 @@ if (!isset($_SESSION["login"])){
 					<ul class="nav">
 						<li><a href="user_dashboard.php" class="active"><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>		
 						<li><a href="presensi_user.php" class=""><i class="lnr lnr-chart-bars"></i> <span>Presensi</span></a></li>
-						<li><a href="denda_user.php" class=""><i class="lnr lnr-code"></i> <span>Denda</span></a></li>
 						<li><a href="logout.php" class=""><i class="lnr lnr-cog"></i> <span>Log Out</span></a></li>
 					</ul>
 				</nav>
@@ -139,64 +138,23 @@ if (!isset($_SESSION["login"])){
 							<!-- Date & Time -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">Date & Time</h3>
+									<h3 class="panel-title">Denda</h3>
 									<div class="right">
 										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
 										<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 									</div>
 								</div>
 								<div class="panel-body">
-									<div class="calendar">
-										<div class="header">
-											<a data-action="prev-month" href="javascript:void(0)" title="Previous Month"><i></i></a>
-											<div class="text" data-render="month-year"></div>
-											<a data-action="next-month" href="javascript:void(0)" title="Next Month"><i></i></a>
-										</div>
-										<div class="months" data-flow="left">
-											<div class="month month-a">
-												<div class="render render-a"></div>
-											</div>
-											<div class="month month-b">
-												<div class="render render-b"></div>
-											</div>
-										</div>
-									</div>
-									<!-- <div class="calendar">
-								        <div class="calendar-header">
-								            <span class="month-picker" id="month-picker">February</span>
-								            <div class="year-picker">
-								                <span class="year-change" id="prev-year">
-								                    <pre><</pre>
-								                </span>
-								                <span id="year">2021</span>
-								                <span class="year-change" id="next-year">
-								                    <pre>></pre>
-								                </span>
-								            </div>
-								        </div>
-								        <div class="calendar-body">
-								            <div class="calendar-week-day">
-								                <div>Sun</div>
-								                <div>Mon</div>
-								                <div>Tue</div>
-								                <div>Wed</div>
-								                <div>Thu</div>
-								                <div>Fri</div>
-								                <div>Sat</div>
-								            </div>
-								            <div class="calendar-days"></div>
-								        </div>
-								        <div class="calendar-footer">
-								            <div class="toggle">
-								                <span>Dark Mode</span>
-								                <div class="dark-mode-switch">
-								                    <div class="dark-mode-switch-ident"></div>
-								                </div>
-								            </div>
-								        </div>
-								        <div class="month-list"></div>
-								    </div>
-								    <script src="/scripts/app.js"></script> -->
+									<h2>Denda Anda : </h2>
+									<h3>
+									<?php $id = $_SESSION["id_user"];
+									$denda_anda = "SELECT * FROM denda WHERE id_user='$id'";
+									$query = mysqli_query($conn, $denda_anda);
+										while($row = mysqli_fetch_array($query)){
+											echo "Rp. ", $row["denda"];
+										}
+									?>
+									</h3>
 								</div>
 							</div>
 							<!-- End Date & Time -->
@@ -219,20 +177,22 @@ if (!isset($_SESSION["login"])){
 											<tr>
 												<th>Hari</th>
 												<th>Jam</th>
-												<th>Status</th>
 											</tr>
 										</thead>
 										<tbody>
 											<?php 
 											$id = $_SESSION["id_user"];
-											$sql = "SELECT hari FROM jadwal_piket WHERE id_user = '$id'";
+											$sql = "SELECT * FROM jadwal_piket WHERE id_user = '$id'";
 											$query = mysqli_query($conn, $sql);
 											while($row = mysqli_fetch_array($query)){
 											?>
 											<tr>
-												<td><?php echo $row["hari"] ?></td>
+												<td><?php echo $row["hari1"] ?></td>
 												<td>08.00 - 16.00</td>
-												<td><span class="label label-success">COMPLETED</span></td>
+											</tr>
+											<tr>
+												<td><?php echo $row["hari2"] ?></td>
+												<td>08.00 - 16.00</td>
 											</tr>
 											<?php } ?>
 										</tbody>

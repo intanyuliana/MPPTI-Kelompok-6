@@ -5,6 +5,31 @@ if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
+
+date_default_timezone_set('Asia/Jakarta');
+$today = date('l');
+if ($today == "Monday") {
+	$day = "Senin";
+} 
+elseif ($today == "Tuesday") {
+	$day = "Selasa";
+}
+ elseif ($today == "Wednesday") {
+	$day = "Rabu";
+}
+elseif ($today == "Thursday") {
+	$day = "Kamis";
+}
+elseif ($today == "Friday") {
+	$day = "Jumat";
+}
+elseif ($today == "Saturday") {
+	$day = "Sabtu";
+}
+elseif ($today == "Sunday") {
+	$day = "Minggu";
+}
+
 ?>
 
 <!doctype html>
@@ -143,29 +168,35 @@ if (!isset($_SESSION["login"])){
 							<!-- Date & Time -->
 							<div class="panel">
 								<div class="panel-heading">
-									<h3 class="panel-title">Date & Time</h3>
+									<h3 class="panel-title">Piket Hari Ini</h3>
 									<div class="right">
 										<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
 										<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 									</div>
 								</div>
 								<div class="panel-body">
-									<div class="calendar">
-										<div class="header">
-											<a data-action="prev-month" href="javascript:void(0)" title="Previous Month"><i></i></a>
-											<div class="text" data-render="month-year"></div>
-											<a data-action="next-month" href="javascript:void(0)" title="Next Month"><i></i></a>
-										</div>
-										<div class="months" data-flow="left">
-											<div class="month month-a">
-												<div class="render render-a"></div>
-											</div>
-											<div class="month month-b">
-												<div class="render render-b"></div>
-											</div>
-										</div>
-									</div>
-
+									<table class="table table-striped table-hover">
+										<thead>
+											<tr>
+												<th>No</th>
+												<th>Nama Asisten</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+										    	<?php 
+										    	$no = 1;
+										    	$sql = "SELECT * FROM jadwal_piket JOIN user ON jadwal_piket.id_user = user.id_user WHERE hari1 = '$day' OR hari2 ='$day'";
+												$query = mysqli_query($conn, $sql);
+									          	while($data = mysqli_fetch_array($query)){
+									              	echo "<td>".$no."</td>";
+									              	echo "<td>".$data['nama']."</td>";
+									              	$no++;
+									            }
+										    	?>
+											</tr>
+										</tbody>
+									</table>
 								</div>
 							</div>
 							<!-- End Date & Time -->

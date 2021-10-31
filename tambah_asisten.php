@@ -118,7 +118,7 @@ if(isset($_POST['Simpan'])){
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
 						</div>
-						<div class="panel-body no-padding">
+						<div class="panel-body">
 							<form action="tambah_asisten.php" method="POST">
 						      	<div class="form-group">
 						        	<label>Nama Asisten</label>

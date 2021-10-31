@@ -5,13 +5,38 @@ if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
+$id_user = $_SESSION['id_user'];
+$sql = 'SELECT * FROM user WHERE id_user='.$id_user;
+
+if(!$result = $conn->query($sql)){
+  die("Gagal Query");
+}
+
+$data = $result->fetch_assoc();
+
+if(isset($_POST['Simpan'])){
+  $nama = $_POST['nama'];
+  $email = $_POST['email'];
+  $id = $_SESSION['id_user'];
+
+  $statement = $conn->prepare('UPDATE user SET email = ?, nama = ? WHERE id_user=?');
+  $statement->bind_param('ssi', $email, $nama, $id);
+  $statement->execute();
+
+  if( $conn->affected_rows > 0 ) { 
+     $message = "Data sukses disimpan!";
+     header('Location:profile_user.php');
+   } else {
+     $message = "Data gagal disimpan!";
+   }    
+}
 ?>
 
 <!doctype html>
 <html lang="en">
 
 <head>
-	<title>Kelola Denda</title>
+	<title>Profile</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -51,7 +76,7 @@ if (!isset($_SESSION["login"])){
 					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
 				</div>
 				<div class="navbar-form navbar-left">
-					 <p style="font-size: 32px; margin-top: 7px;">Kelola Denda</p>
+					 <p style="font-size: 32px; margin-top: 7px;">Profil Asisten</p>
 				</div>
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
@@ -75,7 +100,6 @@ if (!isset($_SESSION["login"])){
 					<ul class="nav">
 						<li><a href="user_dashboard.php" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>		
 						<li><a href="presensi_user.php" class=""><i class="lnr lnr-chart-bars"></i> <span>Presensi</span></a></li>
-						<li><a href="denda_user.php" class="active"><i class="lnr lnr-code"></i> <span>Denda</span></a></li>
 						<li><a href="logout.php" class=""><i class="lnr lnr-cog"></i> <span>Log Out</span></a></li>
 					</ul>
 				</nav>
@@ -90,14 +114,37 @@ if (!isset($_SESSION["login"])){
 					<!-- OVERVIEW -->
 					<div class="panel panel-headline">
 						<div class="panel-heading">
-							<h3 class="panel-title">Halaman Denda, 
+							<h3 class="panel-title">Halaman Profil, 
 								<?php echo $_SESSION["nama"];
 								?> !
 							</h3>
 						</div>
 					</div>
 					<!-- END OVERVIEW -->
-					
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">Edit Data Diri</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+						<div class="panel-body">
+							<form action="eprof_asisten.php" method="POST">
+								<input type="hidden" name="id_user" value="<?php echo $data['id_user']; ?>">
+						      	<div class="form-group">
+						            <label>Nama</label>
+						            <input type="text" name="nama" class="form-control" placeholder="Masukkan Nama" value="<?php echo $data['nama'] ?>" required="">
+						        </div></br>
+						        <div class="form-group">
+						            <label>Email</label>
+						            <input type="text" name="email" class="form-control" placeholder="Masukkan Email" value="<?php echo $data['email'] ?>" required="">
+						        </div>
+						      	<button onclick="return confirm('Apakah anda ingin menginput data?');" type="submit" class="btn btn-primary" name="Simpan">Simpan</button>
+						      	<a class="btn btn-outline-warning" href="profile_user.php">Kembali</a>
+						    </form>
+						</div>
+					</div>
 				</div>
 			</div>
 			<!-- END MAIN CONTENT -->

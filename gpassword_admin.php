@@ -1,25 +1,41 @@
 <?php 
-require 'connection.php';
 session_start();
+require 'connection.php';
 if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
-$id_user = $_SESSION['id_user'];
-$sql = 'SELECT * FROM user WHERE id_user='.$id_user;
 
-if(!$result = $conn->query($sql)){
-  die("Gagal Query");
+if(isset($_POST['Simpan'])){
+  $pass = $_POST['pass'];
+  $konpass = $_POST['konpass'];
+  $id = $_SESSION['id_user'];
+  if($pass == $konpass){
+  	$pass = password_hash($pass, PASSWORD_DEFAULT);
+  	$statement = $conn->prepare('UPDATE user SET password = ? WHERE id_user=?');
+    $statement->bind_param('si', $pass, $id);
+    $statement->execute();
+
+    if( $conn->affected_rows > 0 ) { 
+      $message = "Data sukses disimpan!";
+      header('Location:profile_admin.php');
+    } else {
+      $message = "Data gagal disimpan!";
+    }
+  }
+  else{
+  	echo '<script type ="text/JavaScript">';  
+    echo 'alert("Password tidak sama")';  
+    echo '</script>';
+  }    
 }
-
-$data = $result->fetch_assoc();
 ?>
 
 <!doctype html>
 <html lang="en">
 
 <head>
-	<title>Profile</title>
+	<title>Profil</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -47,10 +63,10 @@ $data = $result->fetch_assoc();
 			<div class="brand">
 				<div class="row">
 					<div class="col-md-5">
-						<a href="user_dashboard.php"><img src="assets/img/LDKOM_mini1.png" alt="Logo LDKOM" class="img-responsive logo"></a>
+						<a href="admin_dashboard.php"><img src="assets/img/LDKOM_mini1.png" alt="Logo LDKOM" class="img-responsive logo"></a>
 					</div>
 					<div class="col-md-4">
-						<a href="user_dashboard.php">LDKOM</a>
+						<a href="admin_dashboard.php">LDKOM</a>
 					</div>
 				</div>
 			</div>
@@ -59,7 +75,7 @@ $data = $result->fetch_assoc();
 					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
 				</div>
 				<div class="navbar-form navbar-left">
-					 <p style="font-size: 32px; margin-top: 7px;">Profil Asisten</p>
+					 <p style="font-size: 32px; margin-top: 7px;">Profil</p>
 				</div>
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
@@ -67,10 +83,13 @@ $data = $result->fetch_assoc();
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="assets/img/profilepic.png" class="img-circle" alt="Avatar"> <span><?php echo $_SESSION["nama"]; ?></span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
 							<ul class="dropdown-menu">
-								<li><a href="profile_user.php"><i class="lnr lnr-user"></i> <span>Profile</span></a></li>
+								<li><a href="profile_admin.php"><i class="lnr lnr-user"></i> <span>Profile</span></a></li>
 								<li><a href="logout.php"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
+						<!-- <li>
+							<a class="update-pro" href="https://www.themeineed.com/downloads/klorofil-pro-bootstrap-admin-dashboard-template/?utm_source=klorofil&utm_medium=template&utm_campaign=KlorofilPro" title="Upgrade to Pro" target="_blank"><i class="fa fa-rocket"></i> <span>UPGRADE TO PRO</span></a>
+						</li> -->
 					</ul>
 				</div>
 			</div>
@@ -81,8 +100,10 @@ $data = $result->fetch_assoc();
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="user_dashboard.php" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>		
-						<li><a href="presensi_user.php" class=""><i class="lnr lnr-chart-bars"></i> <span>Presensi</span></a></li>
+						<li><a href="admin_dashboard.php" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
+						<li><a href="asisten_admin.php" class=""><i class="lnr lnr-file-empty"></i> <span>Asisten</span></a></li>		
+						<li><a href="presensi_admin.php" class=""><i class="lnr lnr-chart-bars"></i> <span>Presensi</span></a></li>
+						<li><a href="denda_admin.php" class=""><i class="lnr lnr-code"></i> <span>Denda</span></a></li>
 						<li><a href="logout.php" class=""><i class="lnr lnr-cog"></i> <span>Log Out</span></a></li>
 					</ul>
 				</nav>
@@ -106,56 +127,29 @@ $data = $result->fetch_assoc();
 					<!-- END OVERVIEW -->
 					<div class="panel">
 						<div class="panel-heading">
-							<h3 class="panel-title">User Profile</h3>
+							<h3 class="panel-title">Ganti Password</h3>
 							<div class="right">
 								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
 						</div>
 						<div class="panel-body">
-							<div class="row">
-								<div class="col-md-3">
-									<img src="assets/img/profilepic.svg" style="width: 150px; margin-left: 25px; margin-bottom: 25px">
-								</div>
-								<div class="col-md-5" align="left">
-									<table class="table table-borderless">
-										<tr>
-											<th><h3>Nama</h3></th>
-											<th><h3>:</h3></th>
-											<th><h3 style="text-align: left;"><?php echo $data['nama'] ?></h3></th>
-										</tr>
-										<tr>
-											<th><h3>Email</h3></th>
-											<th><h3>:</h3></th>
-											<th><h3 style="text-align: left;"><?php echo $data['email'] ?></h3></th>
-										</tr>
-										<tr>
-											<th><h3>Jabatan</h3></th>
-											<th><h3>:</h3></th>
-											<th><h3 style="text-align: left;"><?php $id = $data['id_user'];
-												$sql = "SELECT jabatan FROM user WHERE id_user = '$id'";
-												$query = mysqli_query($conn, $sql);
-												while($row = mysqli_fetch_array($query)){
-													echo $row["jabatan"];
-												}
-											?></h3>	</th>
-										</tr>
-										<tr>
-											<th></th>
-											<th></th>
-											<th>
-												<a class="btn btn-warning" href="gpassword_asisten.php" role="button">Ganti Password</a>
-												<a class="btn btn-success" href="eprof_asisten.php" role="button">Edit Profile</a>
-											</th>
-										</tr>
-									</table>
-
-								</div>
-							</div>
+							<form action="gpassword_admin.php" method="POST">
+								<input type="hidden" name="id_user" value="<?php echo $data['id_user']; ?>">
+						      	<div class="form-group">
+						            <label>Masukkan Password Baru</label>
+						            <input type="text" name="pass" class="form-control" placeholder="Masukkan Password Baru" required="">
+						        </div></br>
+						        <div class="form-group">
+						            <label>Konfirmasi Password Baru</label>
+						            <input type="text" name="konpass" class="form-control" placeholder="Masukkan Password Baru" required="">
+						        </div>
+						      	<button onclick="return confirm('Apakah anda ingin menginput data?');" type="submit" class="btn btn-primary" name="Simpan">Simpan</button>
+						      	<a class="btn btn-outline-warning" href="profile_admin.php">Kembali</a>
+						    </form>
 						</div>
 					</div>
 				</div>
-			</div>
 			<!-- END MAIN CONTENT -->
 		</div>
 		<!-- END MAIN -->

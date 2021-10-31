@@ -1,9 +1,18 @@
 <?php 
 session_start();
+require 'connection.php';
 if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
+$id_user = $_SESSION['id_user'];
+$sql = 'SELECT * FROM user WHERE id_user='.$id_user;
+
+if(!$result = $conn->query($sql)){
+  die("Gagal Query");
+}
+
+$data = $result->fetch_assoc();
 ?>
 
 <!doctype html>
@@ -101,7 +110,55 @@ if (!isset($_SESSION["login"])){
 						
 					</div>
 					<!-- END OVERVIEW -->
-					
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">User Profile</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-3">
+								<img src="assets/img/profilepic.svg" style="width: 150px; margin-left: 25px; margin-bottom: 25px">
+							</div>
+							<div class="col-md-5" align="left">
+								<table class="table table-borderless">
+									<tr>
+										<th><h3>Nama</h3></th>
+										<th><h3>:</h3></th>
+										<th><h3 style="text-align: left;"><?php echo $data['nama'] ?></h3></th>
+									</tr>
+									<tr>
+										<th><h3>Email</h3></th>
+										<th><h3>:</h3></th>
+										<th><h3 style="text-align: left;"><?php echo $data['email'] ?></h3></th>
+									</tr>
+									<tr>
+										<th><h3>Jabatan</h3></th>
+										<th><h3>:</h3></th>
+										<th><h3 style="text-align: left;"><?php $id = $data['id_user'];
+											$sql = "SELECT jabatan FROM user WHERE id_user = '$id'";
+											$query = mysqli_query($conn, $sql);
+											while($row = mysqli_fetch_array($query)){
+												echo $row["jabatan"];
+											}
+										?></h3>	</th>
+									</tr>
+									<tr>
+										<th></th>
+										<th></th>
+										<th>
+											<a class="btn btn-warning" href="gpassword_admin.php" role="button">Ganti Password</a>
+											<a class="btn btn-success" href="eprof_admin.php" role="button">Edit Profile</a>
+										</th>
+									</tr>
+								</table>
+								</div>
+							</div>
+						</div>	
+					</div>
 				</div>
 			</div>
 			<!-- END MAIN CONTENT -->
