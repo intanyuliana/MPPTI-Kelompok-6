@@ -6,7 +6,6 @@ if (!isset($_SESSION["login"])){
 	exit;
 }
 
-$cekhadirsql = "SELECT * FROM presensi WHERE "
 ?>
 
 <!doctype html>
@@ -265,7 +264,7 @@ $cekhadirsql = "SELECT * FROM presensi WHERE "
 							      	<?php 
 								   	require 'connection.php';
 								   	$id2 = $_SESSION['id_user'];
-								    $kueri2 = "SELECT * FROM presensi JOIN jadwal_piket ON presensi.id_piket = jadwal_piket.id_piket JOIN user ON jadwal_piket.id_user = user.id_user WHERE jadwal_piket.id_user = $id2";
+								    $kueri2 = "SELECT * FROM presensi JOIN jadwal_piket ON presensi.id_piket = jadwal_piket.id_piket JOIN user ON jadwal_piket.id_user = user.id_user JOIN kategori ON presensi.id_kategori = kategori.id_kategori WHERE jadwal_piket.id_user = $id2";
 							        $query = mysqli_query($conn, $kueri2);
 							        $no = 1;  	
 							        while($data = mysqli_fetch_array($query)){
@@ -273,7 +272,7 @@ $cekhadirsql = "SELECT * FROM presensi WHERE "
 							            echo "<td>".$no."</td>";
 							            echo "<td>".$data['nama']."</td>";
 							            echo "<td>".$data['jenis_presensi']."</td>";
-							            echo "<td>".$data['kehadiran']."</td>";
+							            echo "<td>".$data['kategori']."</td>";
 							            echo "<td>".$data['waktu']."</td>";
 							            echo "<td>".$data['kegiatan']."</td>";
 							            $no++;
@@ -289,14 +288,6 @@ $cekhadirsql = "SELECT * FROM presensi WHERE "
 			<!-- END MAIN CONTENT -->
 		</div>
 		<!-- END MAIN -->
-		<div class="clearfix"></div>
-		<footer>
-			<div class="container-fluid">
-				<p class="copyright">Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
-</p>
-			</div>
-		</footer>
-	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
 	<script src="/assets/app.js"></script>

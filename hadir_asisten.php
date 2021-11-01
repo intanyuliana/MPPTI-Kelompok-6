@@ -5,8 +5,78 @@ if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
+date_default_timezone_set('Asia/Jakarta');
+$id_user = $_SESSION['id_user'];
+$sql = 'SELECT * FROM jadwal_piket JOIN presensi ON jadwal_piket.id_piket = presensi.id_piket WHERE jadwal_piket.id_user='.$id_user;
 
-$cekhadirsql = "SELECT * FROM presensi WHERE "
+if(!$result = $conn->query($sql)){
+  die("Gagal Query");
+}
+
+$data = $result->fetch_assoc();
+
+if(isset($_POST['Edit'])){
+	$id_piket = $_POST['id_piket'];
+    $waktuabsen = $_POST['waktuabsen'];
+    $kegiatan = $_POST['kegiatan'];
+    $status_denda = "Belum Bayar";
+
+	$absen_pagi_awal = strtotime("07:00:00");
+	$absen_pagi_awal = date("H:i:s", $absen_pagi_awal);
+
+	$absen_pagi_akhir = strtotime("09:00:00");
+	$absen_pagi_akhir = date("H:i:s", $absen_pagi_akhir);
+
+	$absen_sore_awal = strtotime("16:00:00");
+	$absen_sore_awal = date("H:i:s", $absen_sore_awal);
+
+	$absen_sore_akhir = strtotime("17:00:00");
+	$absen_sore_akhir = date("H:i:s", $absen_sore_akhir);
+
+	$limit_absen = strtotime("23:59:59");
+	$limit_absen = date("H:i:s", $limit_absen);
+
+	if ($waktuabsen>=$absen_pagi_awal && $waktuabsen<=$absen_pagi_akhir) {
+		$id_kategori = 11;
+		$jenis_presensi = "Pagi";
+	}
+	elseif ($waktuabsen>$absen_pagi_akhir && $waktuabsen<$absen_sore_awal) {
+		$id_kategori = 10;
+		$jenis_presensi = "Pagi";
+	}
+	elseif ($waktuabsen>=$absen_sore_awal && $waktuabsen<=$absen_sore_akhir) {
+		$id_kategori = 11;
+		$jenis_presensi = "Sore";
+	}
+	elseif ($waktuabsen>$absen_sore_akhir && $waktuabsen<$limit_absen) {
+		$id_kategori = 10;
+		$jenis_presensi = "Sore";
+	}
+
+	$sql3 = "SELECT presensi.id_presensi FROM presensi JOIN jadwal_piket ON presensi.id_piket = jadwal_piket.id_piket JOIN user ON jadwal_piket.id_user = user.id_user WHERE presensi.id_piket = '$id_piket' AND presensi.waktu = '$waktuabsen' AND presensi.jenis_presensi = '$jenis_presensi'";
+	$kueri = mysqli_query($conn, $sql3);
+	while($row = mysqli_fetch_array($kueri)){
+		$id_presensi = $row['id_presensi'];
+	}
+
+	echo $id_kategori;
+	echo $status_denda;
+	echo $jenis_presensi;
+	echo $waktuabsen;
+	echo $kegiatan;
+	echo $id_presensi;
+	die();
+    $statement = $conn->prepare('UPDATE presensi SET id_kategori = ?, status_denda = ?, jenis_presensi = ?, waktu = ?, kegiatan = ? WHERE id_presensi =?');
+    $statement->bind_param('issssi', $id_kategori, $status_denda, $jenis_presensi, $waktuabsen, $kegiatan, $id_presensi);
+    $statement->execute();
+
+    if( $conn->affected_rows > 0 ) { 
+      $message = "Data sukses disimpan!";
+      header('Location:presensi_user.php');
+    } else {
+      $message = "Data gagal disimpan!";
+    }
+  }
 ?>
 
 <!doctype html>
@@ -107,15 +177,9 @@ $cekhadirsql = "SELECT * FROM presensi WHERE "
 							</div>
 						</div>
 						<div class="panel-body">
-							<form action="" method="POST">
-								<input type="hidden" name="id_user" value="<?php echo $data['id_user']; ?>">
-						      	<div class="form-group">
-						        	<label>Jenis Presensi</label>
-						        	<select class="form-control" name="jenis_presensi">
-						          		<option value="">1. Pagi</option>
-						          		<option value="">2. Sore</option>
-						        	</select>
-						      	</div><br>
+							<form action="hadir_asisten.php" method="POST">
+								<input type="hidden" name="id_piket" value=<?php echo $data['id_piket'] ?> >
+								<input type="hidden" name="waktuabsen" value="<?php echo date("H:i:s"); ?>">
 						      	<div class="form-group">
 						            <label>Kegiatan</label>
 						            <input type="text" name="kegiatan" class="form-control" placeholder="Masukkan Kegiatan" required="">
@@ -130,13 +194,6 @@ $cekhadirsql = "SELECT * FROM presensi WHERE "
 			<!-- END MAIN CONTENT -->
 		</div>
 		<!-- END MAIN -->
-		<div class="clearfix"></div>
-		<footer>
-			<div class="container-fluid">
-				<p class="copyright">Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a></p>
-			</div>
-		</footer>
-	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
 	<script src="/assets/app.js"></script>

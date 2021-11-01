@@ -183,12 +183,13 @@ elseif ($today == "Sunday") {
 											</tr>
 										</thead>
 										<tbody>
-											<tr>
+											
 										    	<?php 
 										    	$no = 1;
 										    	$sql = "SELECT * FROM jadwal_piket JOIN user ON jadwal_piket.id_user = user.id_user WHERE hari1 = '$day' OR hari2 ='$day'";
 												$query = mysqli_query($conn, $sql);
 									          	while($data = mysqli_fetch_array($query)){
+									          		echo "<tr>";
 									              	echo "<td>".$no."</td>";
 									              	echo "<td>".$data['nama']."</td>";
 									              	$no++;

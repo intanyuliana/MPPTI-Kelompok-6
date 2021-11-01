@@ -129,7 +129,7 @@ if(isset($_POST['Hapus'])){
 								    <tr>
 								    	<?php 
 								    	include 'connection.php';
-								    	$sql = "SELECT * FROM user";
+								    	$sql = "SELECT * FROM user WHERE jabatan = 'Asisten' OR jabatan = 'Kordas'";
 							          	$query = mysqli_query($conn, $sql);
 							          	$no = 1;
 							          	while($data = mysqli_fetch_array($query)){

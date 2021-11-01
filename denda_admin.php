@@ -7,8 +7,8 @@ if (!isset($_SESSION["login"])){
 }
 
 if(isset($_POST['Bayar'])){
-    $id_denda = $_POST['id_denda'];
-    $sql = "UPDATE denda SET denda = 0 WHERE id_denda = '$id_denda'";
+    $id_piket = $_POST['id_piket'];
+    $sql = "UPDATE presensi SET status_denda = 'Sudah Bayar' WHERE id_piket = '$id_piket'";
 	$query = mysqli_query($conn, $sql);
 
 	if( $query ) { 
@@ -17,6 +17,17 @@ if(isset($_POST['Bayar'])){
 	} else {
 	    $message = "Data gagal disimpan!";
     } 
+}
+
+if(isset($_POST['Hapus'])){
+  $id_kategori = $_POST['id_kategori'];
+  $sql = "DELETE FROM kategori WHERE id_kategori='$id_kategori'";
+   $query = mysqli_query($conn, $sql);
+    if( $query ){
+         $message = "Data Sukses Dihapus";
+    } else {
+         $message = "Data Gagal Dihapus";
+    }
 }
 ?>
 
@@ -117,6 +128,54 @@ if(isset($_POST['Bayar'])){
 					<!-- END OVERVIEW -->
 					<div class="panel">
 						<div class="panel-heading">
+							<h3 class="panel-title">Kategori Denda</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+							</div>
+						</div>
+						<div class="panel-body">
+							<a class="btn btn-primary" href="tambah_kategori.php">Tambah Kategori</a></br></br>
+							<table class="table table-striped table-hover">
+								<thead>
+								    <tr>
+								      	<th scope="col">No</th>
+								      	<th scope="col">Kategori</th>
+								      	<th scope="col">Denda</th>
+								      	<th scope="col">Aksi</th>
+								    </tr>
+								</thead>
+								<tbody>
+								    <tr>
+								    	<?php 
+								    	include 'connection.php';
+								    	$sql = "SELECT * FROM kategori";
+							          	$query = mysqli_query($conn, $sql);
+							          	$no = 1;
+							          	
+							          	while($data = mysqli_fetch_array($query)){
+							              	echo "<tr>";
+							              	echo "<td>".$no."</td>";
+							              	echo "<td>".$data['kategori']."</td>";
+							              	echo "<td>".$data['denda']."</td>";
+							              	echo "<td>";
+							              	$no++;
+							              	?>
+							              	<form action="denda_admin.php" method="POST">
+								                <input type="hidden" name="id_kategori" value="<?php echo $data['id_kategori']?>">
+								                <a class="btn btn-primary" href="edit_kategori.php?id_kategori=<?php echo $data['id_kategori']?>">Edit</a>
+								                <button onclick="return confirm('Apakah anda ingin menghapus data?');" type="submit" class="btn btn-danger" name="Hapus">Hapus</button>
+								             </form>
+							              	<?php
+							            }
+								    	?>
+								    </tr>
+								</tbody>
+							</table>
+						</div>
+					</div>	
+					<div class="panel">
+						<div class="panel-heading">
 							<h3 class="panel-title">Detail Denda Asisten</h3>
 							<div class="right">
 								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
@@ -138,7 +197,7 @@ if(isset($_POST['Bayar'])){
 								    	
 								    	<?php 
 								    	include 'connection.php';
-								    	$sql = "SELECT * FROM user JOIN denda ON user.id_user = denda.id_user";
+								    	$sql = "SELECT user.nama, SUM(kategori.denda) as denda, presensi.id_piket FROM user JOIN jadwal_piket ON user.id_user = jadwal_piket.id_user JOIN presensi ON jadwal_piket.id_piket = presensi.id_piket JOIN kategori ON presensi.id_kategori = kategori.id_kategori WHERE presensi.status_denda = 'Belum Bayar' GROUP BY user.nama";
 							          	$query = mysqli_query($conn, $sql);
 							          	$no = 1;
 							          	
@@ -151,7 +210,7 @@ if(isset($_POST['Bayar'])){
 							              	$no++;
 							              	?>
 							              	<form action="denda_admin.php" method="POST">
-								            	<input type="hidden" name="id_denda" value="<?php echo $data['id_denda']?>">
+								            	<input type="hidden" name="id_piket" value="<?php echo $data['id_piket']?>">
 								            	<button onclick="return confirm('Apakah anda ingin membayar denda?');" type="submit" class="btn btn-danger" name="Bayar">Bayar</button>
 								            </form>
 							              	<?php
@@ -161,20 +220,12 @@ if(isset($_POST['Bayar'])){
 								</tbody>
 							</table>
 						</div>
-					</div>	
+					</div>
 				</div>
 			</div>
 			<!-- END MAIN CONTENT -->
 		</div>
 		<!-- END MAIN -->
-		<div class="clearfix"></div>
-		<footer>
-			<div class="container-fluid">
-				<p class="copyright">Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
-</p>
-			</div>
-		</footer>
-	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
 	<script src="/assets/app.js"></script>

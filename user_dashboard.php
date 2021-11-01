@@ -148,7 +148,7 @@ if (!isset($_SESSION["login"])){
 									<h2>Denda Anda : </h2>
 									<h3>
 									<?php $id = $_SESSION["id_user"];
-									$denda_anda = "SELECT * FROM denda WHERE id_user='$id'";
+									$denda_anda = "SELECT SUM(kategori.denda) as denda FROM presensi JOIN kategori ON presensi.id_kategori = kategori.id_kategori JOIN jadwal_piket ON presensi.id_piket = jadwal_piket.id_piket WHERE jadwal_piket.id_user='$id' AND presensi.status_denda = 'Belum Bayar'";
 									$query = mysqli_query($conn, $denda_anda);
 										while($row = mysqli_fetch_array($query)){
 											echo "Rp. ", $row["denda"];
@@ -207,14 +207,6 @@ if (!isset($_SESSION["login"])){
 			<!-- END MAIN CONTENT -->
 		</div>
 		<!-- END MAIN -->
-		<div class="clearfix"></div>
-		<footer>
-			<div class="container-fluid">
-				<p class="copyright">Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
-</p>
-			</div>
-		</footer>
-	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
 	<script src="/assets/app.js"></script>

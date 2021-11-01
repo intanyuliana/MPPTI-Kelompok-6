@@ -149,7 +149,6 @@ $data = $result->fetch_assoc();
 											</th>
 										</tr>
 									</table>
-
 								</div>
 							</div>
 						</div>

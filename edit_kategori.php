@@ -1,25 +1,43 @@
 <?php 
 session_start();
-require 'connection.php';
 if (!isset($_SESSION["login"])){
 	header("Location: login_page.php");
 	exit;
 }
-$id_user = $_SESSION['id_user'];
-$sql = 'SELECT * FROM user WHERE id_user='.$id_user;
+
+include 'connection.php';
+$id_kategori = $_REQUEST['id_kategori'];
+$sql = 'SELECT * FROM kategori WHERE id_kategori='.$id_kategori;
 
 if(!$result = $conn->query($sql)){
   die("Gagal Query");
 }
 
 $data = $result->fetch_assoc();
+
+if(isset($_POST['Edit'])){
+    $id_kategori = $_POST['id_kategori'];
+    $kategori = $_POST['kategori'];
+    $denda = $_POST['denda'];
+
+    $statement = $conn->prepare('UPDATE kategori SET kategori = ?, denda = ? WHERE id_kategori=?');
+    $statement->bind_param('sii', $kategori, $denda, $id_kategori);
+    $statement->execute();
+
+    if( $conn->affected_rows > 0 ) { 
+      $message = "Data sukses disimpan!";
+      header('Location:denda_admin.php');
+    } else {
+      $message = "Data gagal disimpan!";
+    }
+  }
 ?>
 
 <!doctype html>
 <html lang="en">
 
 <head>
-	<title>Profil</title>
+	<title>Tambah Asisten</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -59,7 +77,7 @@ $data = $result->fetch_assoc();
 					<button type="button" class="btn-toggle-fullwidth"><i class="lnr lnr-arrow-left-circle"></i></button>
 				</div>
 				<div class="navbar-form navbar-left">
-					 <p style="font-size: 32px; margin-top: 7px;">Profil</p>
+					 <p style="font-size: 32px; margin-top: 7px;">Kelola Denda</p>
 				</div>
 				<div id="navbar-menu">
 					<ul class="nav navbar-nav navbar-right">
@@ -71,9 +89,6 @@ $data = $result->fetch_assoc();
 								<li><a href="logout.php"><i class="lnr lnr-exit"></i> <span>Logout</span></a></li>
 							</ul>
 						</li>
-						<!-- <li>
-							<a class="update-pro" href="https://www.themeineed.com/downloads/klorofil-pro-bootstrap-admin-dashboard-template/?utm_source=klorofil&utm_medium=template&utm_campaign=KlorofilPro" title="Upgrade to Pro" target="_blank"><i class="fa fa-rocket"></i> <span>UPGRADE TO PRO</span></a>
-						</li> -->
 					</ul>
 				</div>
 			</div>
@@ -87,7 +102,7 @@ $data = $result->fetch_assoc();
 						<li><a href="admin_dashboard.php" class=""><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
 						<li><a href="asisten_admin.php" class=""><i class="lnr lnr-file-empty"></i> <span>Asisten</span></a></li>		
 						<li><a href="presensi_admin.php" class=""><i class="lnr lnr-chart-bars"></i> <span>Presensi</span></a></li>
-						<li><a href="denda_admin.php" class=""><i class="lnr lnr-code"></i> <span>Denda</span></a></li>
+						<li><a href="denda_admin.php" class="active"><i class="lnr lnr-code"></i> <span>Denda</span></a></li>
 						<li><a href="logout.php" class=""><i class="lnr lnr-cog"></i> <span>Log Out</span></a></li>
 					</ul>
 				</nav>
@@ -100,64 +115,30 @@ $data = $result->fetch_assoc();
 			<div class="main-content">
 				<div class="container-fluid">
 					<!-- OVERVIEW -->
-					<div class="panel panel-headline">
-						<div class="panel-heading">
-							<h3 class="panel-title">Halaman Profil, 
-								<?php echo $_SESSION["nama"];
-								?> !
-							</h3>
-						</div>
-						
-					</div>
-					<!-- END OVERVIEW -->
 					<div class="panel">
 						<div class="panel-heading">
-							<h3 class="panel-title">User Profile</h3>
+							<h3 class="panel-title">Form Edit Kategori</h3>
 							<div class="right">
 								<button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
 								<button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
 							</div>
 						</div>
-					<div class="panel-body">
-						<div class="row">
-							<div class="col-md-3">
-								<img src="assets/img/profilepic.svg" style="width: 150px; margin-left: 25px; margin-bottom: 25px">
-							</div>
-							<div class="col-md-6" align="left">
-								<table class="table table-borderless">
-									<tr>
-										<th><h3>Nama</h3></th>
-										<th><h3>:</h3></th>
-										<th><h3 style="text-align: left;"><?php echo $data['nama'] ?></h3></th>
-									</tr>
-									<tr>
-										<th><h3>Email</h3></th>
-										<th><h3>:</h3></th>
-										<th><h3 style="text-align: left;"><?php echo $data['email'] ?></h3></th>
-									</tr>
-									<tr>
-										<th><h3>Jabatan</h3></th>
-										<th><h3>:</h3></th>
-										<th><h3 style="text-align: left;"><?php $id = $data['id_user'];
-											$sql = "SELECT jabatan FROM user WHERE id_user = '$id'";
-											$query = mysqli_query($conn, $sql);
-											while($row = mysqli_fetch_array($query)){
-												echo $row["jabatan"];
-											}
-										?></h3>	</th>
-									</tr>
-									<tr>
-										<th></th>
-										<th></th>
-										<th>
-											<a class="btn btn-warning" href="gpassword_admin.php" role="button">Ganti Password</a>
-											<a class="btn btn-success" href="eprof_admin.php" role="button">Edit Profile</a>
-										</th>
-									</tr>
-								</table>
-								</div>
-							</div>
-						</div>	
+						<div class="panel-body">
+							<form action="edit_kategori.php" method="POST">
+						      	<div class="form-group">
+						        	<label>Nama Kategori</label>
+						        	<input type="text" name="kategori" class="form-control" placeholder="Masukkan Nama Kategori" value="<?php echo $data['kategori']; ?>" required="">
+						      	</div><br>
+						      	<div class="form-group">
+						            <label>Nominal Denda</label>
+						            <input type="text" name="denda" class="form-control" placeholder="Masukkan Nominal" value="<?php echo $data['denda']; ?>" required="">
+						        </div>
+						        <input type="hidden" name="id_kategori" value="<?php echo $data['id_kategori']; ?>">
+						      	<button onclick="return confirm('Apakah anda ingin menginput data?');" type="submit" class="btn btn-primary" name="Edit">Simpan</button>
+						      	<button type="reset" class="btn btn-danger">Hapus</button>
+						      	<a class="btn btn-outline-warning" href="denda_admin.php">Kembali</a>
+						    </form>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -165,12 +146,6 @@ $data = $result->fetch_assoc();
 		</div>
 		<!-- END MAIN -->
 		<div class="clearfix"></div>
-		<footer>
-			<div class="container-fluid">
-				<p class="copyright">Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
-</p>
-			</div>
-		</footer>
 	</div>
 	<!-- END WRAPPER -->
 	<!-- Javascript -->

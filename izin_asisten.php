@@ -107,18 +107,12 @@ $cekhadirsql = "SELECT * FROM presensi WHERE "
 							</div>
 						</div>
 						<div class="panel-body">
-							<form action="" method="POST">
+							<form action="izin_asisten.php" method="POST">
 								<input type="hidden" name="id_user" value="<?php echo $data['id_user']; ?>">
-						      	<div class="form-group">
-						        	<label>Jenis Presensi</label>
-						        	<select class="form-control" name="jenis_presensi">
-						          		<option value="">1. Pagi</option>
-						          		<option value="">2. Sore</option>
-						        	</select>
-						      	</div><br>
+								<input type="hidden" name="jenis_presensi" value="Pagi">
 						      	<div class="form-group">
 						            <label>Keterangan</label>
-						            <input type="text" name="keteranga" class="form-control" placeholder="Masukkan Kegiatan" required="">
+						            <input type="text" name="keterangan" class="form-control" placeholder="Masukkan Kegiatan" required="">
 						        </div>
 						      	<button onclick="return confirm('Apakah anda ingin menginput data?');" type="submit" class="btn btn-primary" name="Edit">Simpan</button>
 						      	<a class="btn btn-outline-warning" href="presensi_user.php">Kembali</a>
