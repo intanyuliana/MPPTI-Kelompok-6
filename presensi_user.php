@@ -257,6 +257,7 @@ if (!isset($_SESSION["login"])){
 							      <th class="th-sm">Kehadiran</th>
 							      <th class="th-sm">Waktu Presensi</th>
 							      <th class="th-sm">Kegiatan</th>
+							      <th class="th-sm">Keterangan</th>
 							    </tr>
 							  </thead>
 							  <tbody>
@@ -275,6 +276,7 @@ if (!isset($_SESSION["login"])){
 							            echo "<td>".$data['kategori']."</td>";
 							            echo "<td>".$data['waktu']."</td>";
 							            echo "<td>".$data['kegiatan']."</td>";
+							            echo "<td>".$data['keterangan']."</td>";
 							            $no++;
 							        }
 								    ?>

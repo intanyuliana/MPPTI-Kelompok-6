@@ -53,21 +53,12 @@ if(isset($_POST['Edit'])){
 		$jenis_presensi = "Sore";
 	}
 
-	$sql3 = "SELECT presensi.id_presensi FROM presensi JOIN jadwal_piket ON presensi.id_piket = jadwal_piket.id_piket JOIN user ON jadwal_piket.id_user = user.id_user WHERE presensi.id_piket = '$id_piket' AND presensi.waktu = '$waktuabsen' AND presensi.jenis_presensi = '$jenis_presensi'";
-	$kueri = mysqli_query($conn, $sql3);
-	while($row = mysqli_fetch_array($kueri)){
-		$id_presensi = $row['id_presensi'];
-	}
+	$tgl = date("Y-m-d");
+	$tglgabung = date('Y-m-d H:i:s', strtotime("$tgl $waktuabsen"));
+	$keterangan = "-";
 
-	echo $id_kategori;
-	echo $status_denda;
-	echo $jenis_presensi;
-	echo $waktuabsen;
-	echo $kegiatan;
-	echo $id_presensi;
-	die();
-    $statement = $conn->prepare('UPDATE presensi SET id_kategori = ?, status_denda = ?, jenis_presensi = ?, waktu = ?, kegiatan = ? WHERE id_presensi =?');
-    $statement->bind_param('issssi', $id_kategori, $status_denda, $jenis_presensi, $waktuabsen, $kegiatan, $id_presensi);
+    $statement = $conn->prepare('UPDATE presensi SET id_kategori = ?, status_denda = ?, waktu = ?, kegiatan = ?, keterangan = ? WHERE id_piket =? AND jenis_presensi = ?');
+    $statement->bind_param('issssis', $id_kategori, $status_denda, $tglgabung, $kegiatan, $keterangan, $id_piket, $jenis_presensi);
     $statement->execute();
 
     if( $conn->affected_rows > 0 ) { 
@@ -178,6 +169,9 @@ if(isset($_POST['Edit'])){
 						</div>
 						<div class="panel-body">
 							<form action="hadir_asisten.php" method="POST">
+								<?php
+
+								?>
 								<input type="hidden" name="id_piket" value=<?php echo $data['id_piket'] ?> >
 								<input type="hidden" name="waktuabsen" value="<?php echo date("H:i:s"); ?>">
 						      	<div class="form-group">

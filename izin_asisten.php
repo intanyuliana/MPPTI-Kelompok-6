@@ -6,7 +6,69 @@ if (!isset($_SESSION["login"])){
 	exit;
 }
 
-$cekhadirsql = "SELECT * FROM presensi WHERE "
+date_default_timezone_set('Asia/Jakarta');
+$id_user = $_SESSION['id_user'];
+$sql = 'SELECT * FROM jadwal_piket JOIN presensi ON jadwal_piket.id_piket = presensi.id_piket WHERE jadwal_piket.id_user='.$id_user;
+
+if(!$result = $conn->query($sql)){
+  die("Gagal Query");
+}
+
+$data = $result->fetch_assoc();
+
+if(isset($_POST['Edit'])){
+	$id_piket = $_POST['id_piket'];
+    $waktuabsen = $_POST['waktuabsen'];
+    $keterangan = $_POST['keterangan'];
+    $status_denda = "Belum Bayar";
+
+	$absen_pagi_awal = strtotime("07:00:00");
+	$absen_pagi_awal = date("H:i:s", $absen_pagi_awal);
+
+	$absen_pagi_akhir = strtotime("09:00:00");
+	$absen_pagi_akhir = date("H:i:s", $absen_pagi_akhir);
+
+	$absen_sore_awal = strtotime("16:00:00");
+	$absen_sore_awal = date("H:i:s", $absen_sore_awal);
+
+	$absen_sore_akhir = strtotime("17:00:00");
+	$absen_sore_akhir = date("H:i:s", $absen_sore_akhir);
+
+	$limit_absen = strtotime("23:59:59");
+	$limit_absen = date("H:i:s", $limit_absen);
+
+	if ($waktuabsen>=$absen_pagi_awal && $waktuabsen<=$absen_pagi_akhir) {
+		$id_kategori = 11;
+		$jenis_presensi = "Pagi";
+	}
+	elseif ($waktuabsen>$absen_pagi_akhir && $waktuabsen<$absen_sore_awal) {
+		$id_kategori = 10;
+		$jenis_presensi = "Pagi";
+	}
+	elseif ($waktuabsen>=$absen_sore_awal && $waktuabsen<=$absen_sore_akhir) {
+		$id_kategori = 11;
+		$jenis_presensi = "Sore";
+	}
+	elseif ($waktuabsen>$absen_sore_akhir && $waktuabsen<$limit_absen) {
+		$id_kategori = 10;
+		$jenis_presensi = "Sore";
+	}
+
+	$tgl = date("Y-m-d");
+	$tglgabung = date('Y-m-d H:i:s', strtotime("$tgl $waktuabsen"));
+	$kegiatan = "-";
+
+    $statement = $conn->prepare('UPDATE presensi SET id_kategori = ?, status_denda = ?, waktu = ?, kegiatan = ?, keterangan = ? WHERE id_piket =? AND jenis_presensi = ?');
+    $statement->bind_param('issssis', $id_kategori, $status_denda, $tglgabung, $kegiatan, $keterangan, $id_piket, $jenis_presensi);
+    $statement->execute();
+
+    if( $conn->affected_rows > 0 ) { 
+      $message = "Data sukses disimpan!";
+      header('Location:presensi_user.php');
+    } else {
+      $message = "Data gagal disimpan!";
+    }
+  }
 ?>
 
 <!doctype html>
@@ -108,8 +170,8 @@ $cekhadirsql = "SELECT * FROM presensi WHERE "
 						</div>
 						<div class="panel-body">
 							<form action="izin_asisten.php" method="POST">
-								<input type="hidden" name="id_user" value="<?php echo $data['id_user']; ?>">
-								<input type="hidden" name="jenis_presensi" value="Pagi">
+								<input type="hidden" name="id_piket" value="<?php echo $data['id_piket']; ?>">
+								<input type="hidden" name="waktuabsen" value="<?php echo date("H:i:s"); ?>">
 						      	<div class="form-group">
 						            <label>Keterangan</label>
 						            <input type="text" name="keterangan" class="form-control" placeholder="Masukkan Kegiatan" required="">
