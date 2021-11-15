@@ -7,6 +7,57 @@ if (isset($_SESSION["login"])){
 	exit;
 }
 
+date_default_timezone_set('Asia/Jakarta');
+$today = date('l');
+if ($today == "Monday") {
+	$day = "Senin";
+} 
+elseif ($today == "Tuesday") {
+	$day = "Selasa";
+}
+ elseif ($today == "Wednesday") {
+	$day = "Rabu";
+}
+elseif ($today == "Thursday") {
+	$day = "Kamis";
+}
+elseif ($today == "Friday") {
+	$day = "Jumat";
+}
+elseif ($today == "Saturday") {
+	$day = "Sabtu";
+}
+elseif ($today == "Sunday") {
+	$day = "Minggu";
+}
+
+$cekdata = "SELECT * FROM jadwal_piket WHERE hari1 = '$day' OR hari2 = '$day'";
+$run = mysqli_query($conn, $cekdata);
+while($row = mysqli_fetch_array($run)){
+	$pkt = $row['id_piket'];
+	$jm = strtotime("00:00:00");
+	$jm = date("H:i:s", $jm);
+	$cektgl = date("Y-m-d");
+	$inpttgl = date('Y-m-d H:i:s', strtotime("$cektgl $jm"));
+	$inptktg = 8;
+	$inptst = "Belum Bayar";
+	$jp1 = "Pagi";
+	$jp2 = "Sore";
+
+	
+	$cekdb = mysqli_query($conn, "SELECT * FROM presensi WHERE id_piket = '$pkt' AND waktu = '$inpttgl'") or die(mysqli_error($conn));
+	$qcdb = mysqli_fetch_row($cekdb);
+	if(!isset($qcdb) || empty($qcdb)){
+		echo "asdada";
+		$msk = "INSERT INTO presensi (id_piket, id_kategori, status_denda, jenis_presensi, waktu) VALUES ('$pkt', '$inptktg', '$inptst', '$jp1', '$inpttgl')";
+		$qmsk = mysqli_query($conn, $msk)or die(mysqli_error($conn));
+
+		$msk2 = "INSERT INTO presensi (id_piket, id_kategori, status_denda, jenis_presensi, waktu) VALUES ('$pkt', '$inptktg', '$inptst', '$jp2', '$inpttgl')";
+		$qmsk2 = mysqli_query($conn, $msk2)or die(mysqli_error($conn));
+	}
+}
+
+
 if (isset($_POST["login"])) {
 	$email = $_POST["email"];
 	$password = $_POST["password"];
