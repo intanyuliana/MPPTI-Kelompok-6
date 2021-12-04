@@ -126,7 +126,7 @@ if(isset($_POST['Simpan'])){
 						      		<label>Nama Asisten</label>
 						        	<select class="form-control" name="id_user">
 						        		<?php 
-						        		$sql = "SELECT * FROM user WHERE jabatan = 'Asisten'";
+						        		$sql = "SELECT * FROM user WHERE jabatan = 'Asisten' OR jabatan = 'Kordas'";
 						        		$query = mysqli_query($conn, $sql);
 						        		while($data = mysqli_fetch_array($query)){ ?>
 						        			<option value = "<?= $data['id_user'] ?>"><?php echo $data['nama']?></option>
